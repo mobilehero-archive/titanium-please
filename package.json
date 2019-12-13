@@ -1,0 +1,56 @@
+{
+	"name": "@titanium/please",
+	"version": "0.0.1",
+	"description": "Titanium native mobile module for politely requesting data",
+	"keywords": [
+		"rest",
+		"reste",
+		"http",
+		"https",
+		"please",
+		"request",
+		"titanium",
+		"mobile",
+		"axway",
+		"turbo",
+		"ios",
+		"android",
+		"native",
+		"appcelerator",
+		"brenton-house"
+	],
+	"author": {
+		"name": "Brenton House",
+		"email": "brenton.house@gmail.com",
+		"url": "https://brenton.house"
+	},
+	"maintainers": [
+		{
+			"name": "Brenton House",
+			"email": "brenton.house@gmail.com",
+			"url": "https://brenton.house"
+		}
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "github:brentonhouse/titanium-please"
+	},
+	"dependencies": {
+		"@titanium/errors": "0.0.1"
+	},
+	"devDependencies": {
+		"@titanium/eslint-config": "0.0.11",
+		"eslint": "^6.7.2"
+	},
+	"peerDependencies": {
+		"lodash": "^4.17.15",
+		"@titanium/errors": "^0.0.1"
+	},
+	"main": "./Please.js",
+	"scripts": {
+		"test": "npm install --ignore-scripts && npm run list-files",
+		"list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
+		"prepublishOnly2": "git pull && bump"
+	}
+}
