@@ -16,6 +16,7 @@
 		"ios",
 		"android",
 		"native",
+		"axwaydev",
 		"appcelerator",
 		"brenton-house"
 	],
@@ -37,7 +38,7 @@
 		"url": "github:brentonhouse/titanium-please"
 	},
 	"dependencies": {
-		"@titanium/errors": "0.0.1"
+		"@titanium/errors": "0.0.2"
 	},
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.11",
