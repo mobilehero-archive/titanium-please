@@ -44,7 +44,7 @@ export class Please {
 	 //TODO: add config function
 
 	 headers(args = {}) {
-		console.debug('you are here → please.headers()');
+		console.debug('📡  you are here → please.headers()');
 		Object.assign(this.config.headers, args);
 		return this;
 	 }
@@ -60,31 +60,25 @@ export class Please {
 	 }
 
 	 timeout(args) {
-		console.debug('you are here → please.timeout()');
+		console.debug('📡  you are here → please.timeout()');
 		this.config.timeout = args;
 		return this;
 	 }
 
 	 baseUrl(args) {
-		console.debug('you are here → please.baseUrl()');
+		console.debug('📡  you are here → please.baseUrl()');
 		this.config.baseUrl = args;
 		return this;
 	 }
 
 	 url(args) {
-		console.debug('you are here → please.url()');
+		console.debug('📡  you are here → please.url()');
 		this.config.url = args;
 		return this;
 	 }
 
-	//  data(args) {
-	// 	console.debug('you are here → please.data()');
-	// 	this.config.data = args;
-	// 	return this;
-	//  }
-
 	 form(args) {
-		 console.debug('you are here → please.form()');
+		 console.debug('📡  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
 		// this.contentType('application/x-www-form-urlencoded');
@@ -92,13 +86,13 @@ export class Please {
 	 }
 
 	 contentType(value) {
-		console.debug('you are here → please.contentType()');
+		console.debug('📡  you are here → please.contentType()');
 		this.header('Content-Type', value);
 		return this;
 	 }
 
 	 responseType(value = 'json') {
-		console.debug('you are here → please.responseType()');
+		console.debug('📡  you are here → please.responseType()');
 		this.responseType = value.toLowerCase();
 		switch (this.responseType) {
 			case 'json':
@@ -115,13 +109,13 @@ export class Please {
 	 }
 
 	 header(name, value) {
-		console.debug('you are here → please.header()');
+		console.debug('📡  you are here → please.header()');
 		 this.config.headers[name] = value;
 		 return this;
 	 }
 
 	 post(args) {
-		console.debug('you are here → please.post()');
+		console.debug('📡  you are here → please.post()');
 		 if (args) {
 			 this.config.url = args;
 		 }
@@ -132,7 +126,7 @@ export class Please {
 	 }
 
 	get(args) {
-		console.debug('you are here → please.get()');
+		console.debug('📡  you are here → please.get()');
 		this.config.method = 'GET';
 		if (args) {
 			this.config.url = args;
@@ -142,7 +136,7 @@ export class Please {
 	 }
 
 	 create() {
-		console.debug('you are here → please.get()');
+		console.debug('📡  you are here → please.get()');
 		 return new Please(_.cloneDeep(this.config));
 	 }
 
@@ -152,7 +146,6 @@ export class Please {
 		return new Promise((resolve, reject) => {
 			try {
 				const { config } = this;
-				// console.debug(`this.config: ${JSON.stringify(this.config, null, 2)}`);
 				let url;
 				_.defaults(this.config, {
 					baseUrl: '',
@@ -182,9 +175,7 @@ export class Please {
 
 				xhr.timeout = this.config.timeout;
 
-				// console.debug(`this.config.headers: ${JSON.stringify(this.config.headers, null, 2)}`);
 				Object.keys(this.config.headers).forEach(header => {
-					// console.error(`setting header -  ${header}:${this.config.headers[header]}`);
 					xhr.setRequestHeader(header, this.config.headers[header]);
 				});
 
@@ -206,36 +197,31 @@ export class Please {
 						try {
 							result.json = JSON.parse(this.responseText);
 						} catch (err) {
-							console.error('Please.xhr.onload.parse: Error parsing JSON response.');
+							console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 							console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 						}
 
 					}
 
-					// console.debug(`result.json: ${JSON.stringify(result.json, null, 2)}`);
-
-					// console.debug(`result: ${JSON.stringify(result, null, 2)}`);
 					return resolve(result);
 				};
 
 				xhr.onerror = function (response) {
-					console.debug('you are here → please.xhr.onerror()');
+					console.debug('📡  you are here → please.xhr.onerror()');
 					try {
 						response.json = JSON.parse(this.responseText);
 					} catch (err) {
-						console.error('Please.xhr.onload.parse: Error parsing JSON response.');
-						console.warn(`err: ${JSON.stringify(err, null, 2)}`);
+						console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
+						console.error(`err: ${JSON.stringify(err, null, 2)}`);
 					}
 
 					// An SSL error has occurred and a secure connection to the server cannot be made.
-
-					// console.debug(`this.keys: ${JSON.stringify(Object.keys(this), null, 2)}`);
 
 					if (response.code === 401) {
 						return reject(new UnauthorizedError());
 					}
 
-					console.error(`please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
+					console.error(`🛑  please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
 
 					return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
 				};
@@ -246,7 +232,7 @@ export class Please {
 
 
 			} catch (err) {
-				console.debug('you are here → please.xhr.catch()');
+				console.debug('📡  you are here → please.xhr.catch()');
 				console.error(`err: ${JSON.stringify(err, null, 2)}`);
 
 				if (err.message && err.message === 'The Internet connection appears to be offline.') {
