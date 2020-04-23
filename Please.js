@@ -48,7 +48,7 @@ class Please {
 		this.config.responseType = responseType || 'json';
 	}
 
-	//TODO: add config function
+	// TODO: add config function
 
 	headers(args = {}) {
 		console.debug('📌  you are here → please.headers()');
@@ -185,6 +185,7 @@ class Please {
 					urlPath = this.config.baseUrl + this.config.url;
 				} else {
 					console.error(`🛑  unknown url: ${this.config.url}`);
+					// DEBUG: baseUrl
 					console.debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
 					return reject(new Error(`unknown url: ${this.config.url}`));
 				}
@@ -195,6 +196,7 @@ class Please {
 						url.searchParams.set(key, this.config.params[key]);
 					});
 					urlPath = url.toString();
+					// DEBUG: urlPath
 					console.debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
@@ -222,6 +224,7 @@ class Please {
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
 								console.debug('📌  you are here → Please.onEnd');
+								// DEBUG: Please.onEnd.response
 								console.debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
 
@@ -244,7 +247,7 @@ class Please {
 										console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 									}
 								}
-
+								// DEBUG: result
 								console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
 								return resolve(result);
 							});
@@ -255,11 +258,11 @@ class Please {
 
 					// console.error(`req: ${JSON.stringify(req, null, 2)}`);
 
-					req.on('error', err => {
+					req.on('error', error => {
 						console.error('🛑  Please.onError: Error during request');
-						console.error(err);
-						console.debug(`err: ${JSON.stringify(err, null, 2)}`);
-						console.error(`Error: ${err.message}`);
+						console.error(error);
+						console.warn(`error: ${JSON.stringify(error, null, 2)}`);
+						console.error(`Error: ${error.message}`);
 					});
 
 					if (this.config.body) {
@@ -306,9 +309,9 @@ class Please {
 						console.debug('📌  you are here → please.xhr.onerror()');
 						try {
 							response.json = JSON.parse(this.responseText);
-						} catch (err) {
+						} catch (error) {
 							console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
-							console.error(`err: ${JSON.stringify(err, null, 2)}`);
+							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 						}
 
 						// An SSL error has occurred and a secure connection to the server cannot be made.
@@ -326,15 +329,15 @@ class Please {
 				}
 
 				return null;
-			} catch (err) {
+			} catch (error) {
 				console.debug('📌  you are here → please.request.catch()');
-				console.error(`err: ${JSON.stringify(err, null, 2)}`);
+				console.error(`error: ${JSON.stringify(error, null, 2)}`);
 
-				if (err.message && err.message === 'The Internet connection appears to be offline.') {
+				if (error.message && error.message === 'The Internet connection appears to be offline.') {
 					return reject(new NetworkOfflineError());
 				}
 
-				return reject(err);
+				return reject(error);
 			}
 		});
 	}
