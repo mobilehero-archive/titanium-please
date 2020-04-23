@@ -22,6 +22,7 @@ class Please {
 		credentials,
 		timeout,
 		form,
+		json,
 		bearer,
 		auth,
 		data,
@@ -39,6 +40,7 @@ class Please {
 		this.config.credentials = credentials;
 		this.config.timeout = timeout;
 		this.config.form = form;
+		this.config.json = json;
 		this.config.bearer = bearer;
 		this.config.auth = auth;
 		this.config.authType = authType;
@@ -49,14 +51,14 @@ class Please {
 	//TODO: add config function
 
 	headers(args = {}) {
-		console.debug('📡  you are here → please.headers()');
+		console.debug('📌  you are here → please.headers()');
 		Object.assign(this.config.headers, args);
 		return this;
 	}
 
 	params(args = {}) {
-		console.debug('📡  you are here → please.params()');
-		Object.keys(args).forEach((key) => (args[key] == null) && delete args[key]); 
+		console.debug('📌  you are here → please.params()');
+		Object.keys(args).forEach(key => (args[key] == null) && delete args[key]);
 		Object.assign(this.config.params, args);
 		return this;
 	}
@@ -72,39 +74,51 @@ class Please {
 	}
 
 	timeout(args) {
-		console.debug('📡  you are here → please.timeout()');
+		console.debug('📌  you are here → please.timeout()');
 		this.config.timeout = args;
 		return this;
 	}
 
 	baseUrl(args) {
-		console.debug('📡  you are here → please.baseUrl()');
+		console.debug('📌  you are here → please.baseUrl()');
 		this.config.baseUrl = args;
 		return this;
 	}
 
 	url(args) {
-		console.debug('📡  you are here → please.url()');
+		console.debug('📌  you are here → please.url()');
 		this.config.url = args;
 		return this;
 	}
 
 	form(args) {
-		console.debug('📡  you are here → please.form()');
+		console.debug('📌  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
 		// this.contentType('application/x-www-form-urlencoded');
 		return this;
 	}
 
+	json(args) {
+		console.debug('📌  you are here → please.json()');
+		if (typeof args === 'object') {
+			this.config.body = JSON.stringify(args);
+		} else {
+			this.config.body = args;
+		}
+		this.config.method = 'POST';
+		this.contentType('application/json');
+		return this;
+	}
+
 	contentType(value) {
-		console.debug('📡  you are here → please.contentType()');
+		console.debug('📌  you are here → please.contentType()');
 		this.header('Content-Type', value);
 		return this;
 	}
 
 	responseType(value = 'json') {
-		console.debug('📡  you are here → please.responseType()');
+		console.debug('📌  you are here → please.responseType()');
 		this.responseType = value.toLowerCase();
 		switch (this.responseType) {
 			case 'json':
@@ -121,13 +135,13 @@ class Please {
 	}
 
 	header(name, value) {
-		console.debug('📡  you are here → please.header()');
+		console.debug('📌  you are here → please.header()');
 		this.config.headers[name] = value;
 		return this;
 	}
 
 	post(args) {
-		console.debug('📡  you are here → please.post()');
+		console.debug('📌  you are here → please.post()');
 		if (args) {
 			this.config.url = args;
 		}
@@ -137,7 +151,7 @@ class Please {
 	}
 
 	get(args) {
-		console.debug('📡  you are here → please.get()');
+		console.debug('📌  you are here → please.get()');
 		this.config.method = 'GET';
 		if (args) {
 			this.config.url = args;
@@ -147,7 +161,7 @@ class Please {
 	}
 
 	create() {
-		console.debug('📡  you are here → please.get()');
+		console.debug('📌  you are here → please.get()');
 		return new Please(_.cloneDeep(this.config));
 	}
 
@@ -190,7 +204,6 @@ class Please {
 				bearer && this.header('Authorization', `Bearer ${bearer}`);
 
 
-
 				if (typeof Titanium === 'undefined') {
 					const req = https.request(
 						urlPath,
@@ -212,14 +225,14 @@ class Please {
 								console.debug('you are here → Please.onEnd');
 								console.debug(`data: ${JSON.stringify(data, null, 2)}`);
 
-								
+
 								if (resp.statusCode === 401) {
 									return reject(new UnauthorizedError());
 								}
 
 								const result = {
-									status:     resp.statusCode,
-									statusText: resp.statusMessage,
+									statusCode:     resp.statusCode,
+									statusMessage: resp.statusMessage,
 									body:       data,
 									headers:    resp.headers,
 								};
@@ -250,6 +263,9 @@ class Please {
 						console.error(`Error: ${err.message}`);
 					});
 
+					if( this.config.body ){
+						req.write(this.config.body);
+					}
 					req.end();
 				} else {
 					const xhr = Ti.Network.createHTTPClient();
@@ -266,8 +282,8 @@ class Please {
 						// console.debug(`please.xhr.onload.response: ${JSON.stringify(response, null, 2)}`);
 
 						const result = {
-							status:     this.status,
-							statusText: this.statusText,
+							statusCode:     this.status,
+							statusMessage: this.statusText,
 							body:       this.responseText,
 							headers:    this.responseHeaders,
 						};
@@ -288,7 +304,7 @@ class Please {
 					};
 
 					xhr.onerror = function (response) {
-						console.debug('📡  you are here → please.xhr.onerror()');
+						console.debug('📌  you are here → please.xhr.onerror()');
 						try {
 							response.json = JSON.parse(this.responseText);
 						} catch (err) {
@@ -312,7 +328,7 @@ class Please {
 
 				return null;
 			} catch (err) {
-				console.debug('📡  you are here → please.request.catch()');
+				console.debug('📌  you are here → please.request.catch()');
 				console.error(`err: ${JSON.stringify(err, null, 2)}`);
 
 				if (err.message && err.message === 'The Internet connection appears to be offline.') {
