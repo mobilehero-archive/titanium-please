@@ -29,7 +29,7 @@ class Please {
 		responseType,
 		authType, // swagger?
 	}) {
-		console.debug('you are here → please.constructor()');
+		console.debug('📌  you are here → please.constructor()');
 		this.config = {};
 		this.config.headers = Object.assign({}, headers);
 		this.config.body = body;
@@ -167,7 +167,7 @@ class Please {
 
 	//  async request(args) {
 	request(args) {
-		console.debug('you are here → please.request()');
+		console.debug('📌  you are here → please.request()');
 		return new Promise((resolve, reject) => {
 			try {
 				const { config } = this;
@@ -184,10 +184,9 @@ class Please {
 				} else if (this.config.baseUrl.toLowerCase().startsWith('http')) {
 					urlPath = this.config.baseUrl + this.config.url;
 				} else {
-					console.error('unknown url');
-					console.debug(`url: ${JSON.stringify(this.config.url, null, 2)}`);
-					console.debug(`baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
-					return reject(new Error('unknown url'));
+					console.error(`🛑  unknown url: ${this.config.url}`);
+					console.debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+					return reject(new Error(`unknown url: ${this.config.url}`));
 				}
 
 				const url = new URL(urlPath);
@@ -196,7 +195,7 @@ class Please {
 						url.searchParams.set(key, this.config.params[key]);
 					});
 					urlPath = url.toString();
-					console.debug(`urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+					console.debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
@@ -222,8 +221,8 @@ class Please {
 
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
-								console.debug('you are here → Please.onEnd');
-								console.debug(`data: ${JSON.stringify(data, null, 2)}`);
+								console.debug('📌  you are here → Please.onEnd');
+								console.debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
 
 								if (resp.statusCode === 401) {
@@ -231,10 +230,10 @@ class Please {
 								}
 
 								const result = {
-									statusCode:     resp.statusCode,
+									statusCode:    resp.statusCode,
 									statusMessage: resp.statusMessage,
-									body:       data,
-									headers:    resp.headers,
+									body:          data,
+									headers:       resp.headers,
 								};
 
 								if (config.responseType === 'json') {
@@ -246,7 +245,7 @@ class Please {
 									}
 								}
 
-								console.debug(`result: ${JSON.stringify(result, null, 2)}`);
+								console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
 								return resolve(result);
 							});
 
@@ -263,7 +262,7 @@ class Please {
 						console.error(`Error: ${err.message}`);
 					});
 
-					if( this.config.body ){
+					if (this.config.body) {
 						req.write(this.config.body);
 					}
 					req.end();
@@ -278,14 +277,14 @@ class Please {
 					});
 
 					xhr.onload = function (response) {
-						console.debug('you are here → please.xhr.onload()');
+						console.debug('📌  you are here → please.xhr.onload()');
 						// console.debug(`please.xhr.onload.response: ${JSON.stringify(response, null, 2)}`);
 
 						const result = {
-							statusCode:     this.status,
+							statusCode:    this.status,
 							statusMessage: this.statusText,
-							body:       this.responseText,
-							headers:    this.responseHeaders,
+							body:          this.responseText,
+							headers:       this.responseHeaders,
 						};
 
 						// console.debug(`Please.xhr.onload.response.result: ${JSON.stringify(result, null, 2)}`);
