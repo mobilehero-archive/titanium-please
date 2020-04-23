@@ -54,6 +54,13 @@ class Please {
 		return this;
 	}
 
+	params(args = {}) {
+		console.debug('📡  you are here → please.params()');
+		Object.keys(args).forEach((key) => (args[key] == null) && delete args[key]); 
+		Object.assign(this.config.params, args);
+		return this;
+	}
+
 	body(args) {
 		this.config.body = args;
 		return this;
@@ -150,7 +157,7 @@ class Please {
 		return new Promise((resolve, reject) => {
 			try {
 				const { config } = this;
-				let url;
+				let urlPath;
 				_.defaults(this.config, {
 					baseUrl: '',
 					url:     '',
@@ -159,9 +166,9 @@ class Please {
 				});
 				if (this.config.url.toLowerCase().startsWith('http')) {
 					// eslint-disable-next-line prefer-destructuring
-					url = this.config.url;
+					urlPath = this.config.url;
 				} else if (this.config.baseUrl.toLowerCase().startsWith('http')) {
-					url = this.config.baseUrl + this.config.url;
+					urlPath = this.config.baseUrl + this.config.url;
 				} else {
 					console.error('unknown url');
 					console.debug(`url: ${JSON.stringify(this.config.url, null, 2)}`);
@@ -169,13 +176,24 @@ class Please {
 					return reject(new Error('unknown url'));
 				}
 
+				const url = new URL(urlPath);
+				if (this.config.params) {
+					_.forEach(_.keys(this.config.params), key => {
+						url.searchParams.set(key, this.config.params[key]);
+					});
+					urlPath = url.toString();
+					console.debug(`urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+				}
+
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
 
 				bearer && this.header('Authorization', `Bearer ${bearer}`);
 
+
+
 				if (typeof Titanium === 'undefined') {
 					const req = https.request(
-						url,
+						urlPath,
 						{
 							// headers: this.config.headers,
 							method:  this.config.method,
@@ -191,11 +209,17 @@ class Please {
 
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
+								console.debug('you are here → Please.onEnd');
 								console.debug(`data: ${JSON.stringify(data, null, 2)}`);
 
+								
+								if (resp.statusCode === 401) {
+									return reject(new UnauthorizedError());
+								}
+
 								const result = {
-									status:     this.statusCode,
-									statusText: this.statusMessage,
+									status:     resp.statusCode,
+									statusText: resp.statusMessage,
 									body:       data,
 									headers:    resp.headers,
 								};
@@ -217,16 +241,19 @@ class Please {
 						},
 					);
 
+					// console.error(`req: ${JSON.stringify(req, null, 2)}`);
+
 					req.on('error', err => {
+						console.error('🛑  Please.onError: Error during request');
 						console.error(err);
 						console.debug(`err: ${JSON.stringify(err, null, 2)}`);
-						console.log(`Error: ${err.message}`);
+						console.error(`Error: ${err.message}`);
 					});
 
 					req.end();
 				} else {
 					const xhr = Ti.Network.createHTTPClient();
-					xhr.open(this.config.method, url);
+					xhr.open(this.config.method, urlPath);
 
 					xhr.timeout = this.config.timeout;
 
