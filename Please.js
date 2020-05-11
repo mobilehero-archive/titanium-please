@@ -1,6 +1,8 @@
 /* eslint-disable promise/avoid-new */
 /* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
+const querystring = require('querystring');
+
 const NetworkOfflineError = require('@titanium/errors/NetworkOffline');
 const UnauthorizedError = require('@titanium/errors/Unauthorized');
 
@@ -95,7 +97,7 @@ class Please {
 		console.debug('📌  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
-		// this.contentType('application/x-www-form-urlencoded');
+		this.contentType('application/x-www-form-urlencoded');
 		return this;
 	}
 
@@ -140,6 +142,13 @@ class Please {
 		return this;
 	}
 
+	debug() {
+		console.debug('📌  you are here → please.debug()');
+		// DEBUG: please
+		// console.debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
+		return this;
+	}
+
 	post(args) {
 		console.debug('📌  you are here → please.post()');
 		if (args) {
@@ -161,7 +170,7 @@ class Please {
 	}
 
 	create() {
-		console.debug('📌  you are here → please.get()');
+		console.debug('📌  you are here → please.create()');
 		return new Please(_.cloneDeep(this.config));
 	}
 
@@ -185,8 +194,10 @@ class Please {
 					urlPath = this.config.baseUrl + this.config.url;
 				} else {
 					console.error(`🛑  unknown url: ${this.config.url}`);
+
 					// DEBUG: baseUrl
-					console.debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+					// console.debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+
 					return reject(new Error(`unknown url: ${this.config.url}`));
 				}
 
@@ -196,8 +207,9 @@ class Please {
 						url.searchParams.set(key, this.config.params[key]);
 					});
 					urlPath = url.toString();
+
 					// DEBUG: urlPath
-					console.debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+					// console.debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
@@ -224,8 +236,9 @@ class Please {
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
 								console.debug('📌  you are here → Please.onEnd');
+
 								// DEBUG: Please.onEnd.response
-								console.debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
+								// console.debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
 
 								if (resp.statusCode === 401) {
@@ -242,13 +255,15 @@ class Please {
 								if (config.responseType === 'json') {
 									try {
 										result.json = JSON.parse(data);
-									} catch (err) {
+									} catch (error) {
 										console.error('🛑  Please.onEnd.parse: Error parsing JSON response.');
-										console.warn(`err: ${JSON.stringify(err, null, 2)}`);
+										console.warn(`error: ${JSON.stringify(error, null, 2)}`);
 									}
 								}
+
 								// DEBUG: result
-								console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+								// console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+
 								return resolve(result);
 							});
 
@@ -261,12 +276,14 @@ class Please {
 					req.on('error', error => {
 						console.error('🛑  Please.onError: Error during request');
 						console.error(error);
-						console.warn(`error: ${JSON.stringify(error, null, 2)}`);
-						console.error(`Error: ${error.message}`);
+						console.warn(`🛑  error: ${JSON.stringify(error, null, 2)}`);
+						console.error(`🛑  Error: ${error.message}`);
 					});
 
 					if (this.config.body) {
 						req.write(this.config.body);
+					} else 	if (this.config.form) {
+						req.write(querystring.stringify(this.config.form));
 					}
 					req.end();
 				} else {
@@ -281,7 +298,6 @@ class Please {
 
 					xhr.onload = function (response) {
 						console.debug('📌  you are here → please.xhr.onload()');
-						// console.debug(`please.xhr.onload.response: ${JSON.stringify(response, null, 2)}`);
 
 						const result = {
 							statusCode:    this.status,
@@ -290,9 +306,6 @@ class Please {
 							headers:       this.responseHeaders,
 						};
 
-						// console.debug(`Please.xhr.onload.response.result: ${JSON.stringify(result, null, 2)}`);
-
-						// console.debug(`config.responseType: ${JSON.stringify(config.responseType, null, 2)}`);
 						if (config.responseType === 'json') {
 							try {
 								result.json = JSON.parse(this.responseText);
