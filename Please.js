@@ -169,6 +169,16 @@ class Please {
 		return this.request();
 	}
 
+	delete(args) {
+		console.debug('📌  you are here → please.delete()');
+		this.config.method = 'DELETE';
+		if (args) {
+			this.config.url = args;
+		}
+
+		return this.request();
+	}
+
 	create() {
 		console.debug('📌  you are here → please.create()');
 		return new Please(_.cloneDeep(this.config));
