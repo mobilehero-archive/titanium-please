@@ -48,6 +48,7 @@ class Please {
 		this.config.authType = authType;
 		this.config.data = data;
 		this.config.responseType = responseType || 'json';
+		this.__config = _.cloneDeep(this.config);
 	}
 
 	// TODO: add config function
@@ -179,9 +180,14 @@ class Please {
 		return this.request();
 	}
 
-	create() {
-		console.debug('📌  you are here → please.create()');
+	clone() {
+		console.debug('📌  you are here → please.clone()');
 		return new Please(_.cloneDeep(this.config));
+	}
+
+	reset() {
+		console.debug('📌  you are here → please.reset()');
+		this.config = _.cloneDeep(this.__config);
 	}
 
 	//  async request(args) {
@@ -362,7 +368,10 @@ class Please {
 
 				return reject(error);
 			}
-		});
+		})
+			.finally(() => {
+				this.reset();
+			});
 	}
 }
 
