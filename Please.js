@@ -29,6 +29,7 @@ class Please {
 		auth,
 		data,
 		responseType,
+		debug = false,
 		authType, // swagger?
 	}) {
 		console.debug('📌  you are here → please.constructor()');
@@ -48,6 +49,7 @@ class Please {
 		this.config.authType = authType;
 		this.config.data = data;
 		this.config.responseType = responseType || 'json';
+		this.config.DEBUG_MODE = debug;
 		this.__config = _.cloneDeep(this.config);
 	}
 
@@ -143,10 +145,9 @@ class Please {
 		return this;
 	}
 
-	debug() {
-		console.debug('📌  you are here → please.debug()');
-		// DEBUG: please
-		// console.debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
+	debug(value) {
+		this.this.config.DEBUG_MODE = !!value;
+		console.debug(`📌  you are here → please.debug(${this.config.DEBUG_MODE})`);
 		return this;
 	}
 
@@ -232,6 +233,10 @@ class Please {
 
 				bearer && this.header('Authorization', `Bearer ${bearer}`);
 
+				if (this.config.DEBUG_MODE) {
+					// DEBUG: please
+					console.debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
+				}
 
 				if (typeof Titanium === 'undefined') {
 					const req = https.request(
@@ -277,8 +282,10 @@ class Please {
 									}
 								}
 
+								if (this.config.DEBUG_MODE) {
 								// DEBUG: result
 								// console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+								}
 
 								return resolve(result);
 							});
@@ -329,6 +336,11 @@ class Please {
 								console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 								console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 							}
+						}
+
+						if (this.config.DEBUG_MODE) {
+							// DEBUG: result
+							// console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
 						}
 
 						return resolve(result);
