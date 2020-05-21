@@ -6,6 +6,13 @@ const querystring = require('querystring');
 const NetworkOfflineError = require('@titanium/errors/NetworkOffline');
 const UnauthorizedError = require('@titanium/errors/Unauthorized');
 
+let debug = () => {};
+if (process.env.DEBUG_MODE === 'true') {
+	debug = (...args) => {
+		console.debug(args);
+	};
+}
+
 let http;
 let https;
 if (typeof Titanium === 'undefined') {
@@ -32,7 +39,7 @@ class Please {
 		debug = false,
 		authType, // swagger?
 	}) {
-		console.debug('📌  you are here → please.constructor()');
+		debug('📌  you are here → please.constructor()');
 		this.config = {};
 		this.config.headers = Object.assign({}, headers);
 		this.config.body = body;
@@ -56,13 +63,13 @@ class Please {
 	// TODO: add config function
 
 	headers(args = {}) {
-		console.debug('📌  you are here → please.headers()');
+		debug('📌  you are here → please.headers()');
 		Object.assign(this.config.headers, args);
 		return this;
 	}
 
 	params(args = {}) {
-		console.debug('📌  you are here → please.params()');
+		debug('📌  you are here → please.params()');
 		Object.keys(args).forEach(key => (args[key] == null) && delete args[key]);
 		Object.assign(this.config.params, args);
 		return this;
@@ -79,25 +86,25 @@ class Please {
 	}
 
 	timeout(args) {
-		console.debug('📌  you are here → please.timeout()');
+		debug('📌  you are here → please.timeout()');
 		this.config.timeout = args;
 		return this;
 	}
 
 	baseUrl(args) {
-		console.debug('📌  you are here → please.baseUrl()');
+		debug('📌  you are here → please.baseUrl()');
 		this.config.baseUrl = args;
 		return this;
 	}
 
 	url(args) {
-		console.debug('📌  you are here → please.url()');
+		debug('📌  you are here → please.url()');
 		this.config.url = args;
 		return this;
 	}
 
 	form(args) {
-		console.debug('📌  you are here → please.form()');
+		debug('📌  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
 		this.contentType('application/x-www-form-urlencoded');
@@ -105,7 +112,7 @@ class Please {
 	}
 
 	json(args) {
-		console.debug('📌  you are here → please.json()');
+		debug('📌  you are here → please.json()');
 		if (typeof args === 'object') {
 			this.config.body = JSON.stringify(args);
 		} else {
@@ -117,13 +124,13 @@ class Please {
 	}
 
 	contentType(value) {
-		console.debug('📌  you are here → please.contentType()');
+		debug('📌  you are here → please.contentType()');
 		this.header('Content-Type', value);
 		return this;
 	}
 
 	responseType(value = 'json') {
-		console.debug('📌  you are here → please.responseType()');
+		debug('📌  you are here → please.responseType()');
 		this.responseType = value.toLowerCase();
 		switch (this.responseType) {
 			case 'json':
@@ -140,19 +147,19 @@ class Please {
 	}
 
 	header(name, value) {
-		console.debug('📌  you are here → please.header()');
+		debug('📌  you are here → please.header()');
 		this.config.headers[name] = value;
 		return this;
 	}
 
 	debug(value) {
-		this.this.config.DEBUG_MODE = !!value;
-		console.debug(`📌  you are here → please.debug(${this.config.DEBUG_MODE})`);
+		this.config.DEBUG_MODE = !!value;
+		debug(`📌  you are here → please.debug(${this.config.DEBUG_MODE})`);
 		return this;
 	}
 
 	post(args) {
-		console.debug('📌  you are here → please.post()');
+		debug('📌  you are here → please.post()');
 		if (args) {
 			this.config.url = args;
 		}
@@ -162,7 +169,7 @@ class Please {
 	}
 
 	get(args) {
-		console.debug('📌  you are here → please.get()');
+		debug('📌  you are here → please.get()');
 		this.config.method = 'GET';
 		if (args) {
 			this.config.url = args;
@@ -172,7 +179,7 @@ class Please {
 	}
 
 	delete(args) {
-		console.debug('📌  you are here → please.delete()');
+		debug('📌  you are here → please.delete()');
 		this.config.method = 'DELETE';
 		if (args) {
 			this.config.url = args;
@@ -182,18 +189,18 @@ class Please {
 	}
 
 	clone() {
-		console.debug('📌  you are here → please.clone()');
+		debug('📌  you are here → please.clone()');
 		return new Please(_.cloneDeep(this.config));
 	}
 
 	reset() {
-		console.debug('📌  you are here → please.reset()');
+		debug('📌  you are here → please.reset()');
 		this.config = _.cloneDeep(this.__config);
 	}
 
 	//  async request(args) {
 	request(args) {
-		console.debug('📌  you are here → please.request()');
+		debug('📌  you are here → please.request()');
 		return new Promise((resolve, reject) => {
 			try {
 				const { config } = this;
@@ -213,7 +220,7 @@ class Please {
 					console.error(`🛑  unknown url: ${this.config.url}`);
 
 					// DEBUG: baseUrl
-					// console.debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+					// debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
 
 					return reject(new Error(`unknown url: ${this.config.url}`));
 				}
@@ -226,7 +233,7 @@ class Please {
 					urlPath = url.toString();
 
 					// DEBUG: urlPath
-					// console.debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+					// debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
@@ -235,7 +242,7 @@ class Please {
 
 				if (this.config.DEBUG_MODE) {
 					// DEBUG: please
-					console.debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
+					debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
 				}
 
 				if (typeof Titanium === 'undefined') {
@@ -256,10 +263,10 @@ class Please {
 
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
-								console.debug('📌  you are here → Please.onEnd');
+								debug('📌  you are here → Please.onEnd');
 
 								// DEBUG: Please.onEnd.response
-								// console.debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
+								// debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
 
 								if (resp.statusCode === 401) {
@@ -284,7 +291,7 @@ class Please {
 
 								if (this.config.DEBUG_MODE) {
 								// DEBUG: result
-								// console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+									debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
 								}
 
 								return resolve(result);
@@ -320,7 +327,7 @@ class Please {
 					});
 
 					xhr.onload = function (response) {
-						console.debug('📌  you are here → please.xhr.onload()');
+						debug('📌  you are here → please.xhr.onload()');
 
 						const result = {
 							statusCode:    this.status,
@@ -340,14 +347,14 @@ class Please {
 
 						if (this.config.DEBUG_MODE) {
 							// DEBUG: result
-							// console.debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+							debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
 						}
 
 						return resolve(result);
 					};
 
 					xhr.onerror = function (response) {
-						console.debug('📌  you are here → please.xhr.onerror()');
+						debug('📌  you are here → please.xhr.onerror()');
 						try {
 							response.json = JSON.parse(this.responseText);
 						} catch (error) {
@@ -371,7 +378,7 @@ class Please {
 
 				return null;
 			} catch (error) {
-				console.debug('📌  you are here → please.request.catch()');
+				debug('📌  you are here → please.request.catch()');
 				console.error(`error: ${JSON.stringify(error, null, 2)}`);
 
 				if (error.message && error.message === 'The Internet connection appears to be offline.') {
