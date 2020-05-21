@@ -36,7 +36,7 @@ class Please {
 		auth,
 		data,
 		responseType,
-		debug = false,
+		debug_mode = false,
 		authType, // swagger?
 	}) {
 		debug('📌  you are here → please.constructor()');
@@ -56,7 +56,7 @@ class Please {
 		this.config.authType = authType;
 		this.config.data = data;
 		this.config.responseType = responseType || 'json';
-		this.config.DEBUG_MODE = debug;
+		this.config.DEBUG_MODE = debug_mode;
 		this.__config = _.cloneDeep(this.config);
 	}
 
