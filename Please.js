@@ -6,6 +6,9 @@ const querystring = require('querystring');
 const NetworkOfflineError = require('@titanium/errors/NetworkOffline');
 const UnauthorizedError = require('@titanium/errors/Unauthorized');
 
+// DEBUG: process.env.DEBUG_MODE
+console.debug(`🦠  [Please] process.env.DEBUG_MODE: ${JSON.stringify(process.env.DEBUG_MODE, null, 2)}`);
+
 let debug = () => {};
 if (process.env.DEBUG_MODE === 'true') {
 	debug = (...args) => {
