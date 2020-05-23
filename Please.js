@@ -7,7 +7,7 @@ const NetworkOfflineError = require('@titanium/errors/NetworkOffline');
 const UnauthorizedError = require('@titanium/errors/Unauthorized');
 
 // DEBUG: process.env.DEBUG_MODE
-console.debug(`🦠  [Please] process.env.DEBUG_MODE: ${JSON.stringify(process.env.DEBUG_MODE, null, 2)}`);
+console.debug(`🦠  [Please] process.env.DEBUG_MODE: ${process.env.DEBUG_MODE}`);
 
 let debug = () => {};
 if (process.env.DEBUG_MODE === 'true') {
@@ -320,6 +320,7 @@ class Please {
 					}
 					req.end();
 				} else {
+					const { DEBUG_MODE } = this.config;
 					const xhr = Ti.Network.createHTTPClient();
 					xhr.open(this.config.method, urlPath);
 
@@ -347,8 +348,10 @@ class Please {
 								console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 							}
 						}
+						// DEBUG: DEBUG_MODE
+						console.debug(`🦠  DEBUG_MODE: ${JSON.stringify(DEBUG_MODE, null, 2)}`);
 
-						if (this.config.DEBUG_MODE) {
+						if (DEBUG_MODE) {
 							// DEBUG: result
 							debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
 						}
