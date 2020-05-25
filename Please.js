@@ -171,6 +171,16 @@ class Please {
 		return this.request();
 	}
 
+	put(args) {
+		debug('📌  you are here → please.put()');
+		if (args) {
+			this.config.url = args;
+		}
+		this.config.method = 'PUT';
+
+		return this.request();
+	}
+
 	get(args) {
 		debug('📌  you are here → please.get()');
 		this.config.method = 'GET';
