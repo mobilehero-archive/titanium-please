@@ -275,6 +275,7 @@ class Please {
 
 
 								if (resp.statusCode === 401) {
+									this.reset();
 									return reject(new UnauthorizedError());
 								}
 
@@ -296,13 +297,12 @@ class Please {
 
 								if (this.config.DEBUG_MODE) {
 								// DEBUG: result
-									debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+									debug(`🦠  Please.request.result: ${JSON.stringify(result, null, 2)}`);
 								}
 
 								return resolve(result);
 							});
 
-							// });
 						},
 					);
 
@@ -322,7 +322,7 @@ class Please {
 					}
 					req.end();
 				} else {
-					const { DEBUG_MODE } = this.config;
+					const that = this;
 					const xhr = Ti.Network.createHTTPClient();
 					xhr.open(this.config.method, urlPath);
 
@@ -350,12 +350,10 @@ class Please {
 								console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 							}
 						}
-						// DEBUG: DEBUG_MODE
-						console.debug(`🦠  DEBUG_MODE: ${JSON.stringify(DEBUG_MODE, null, 2)}`);
 
-						if (DEBUG_MODE) {
+						if (that.config.DEBUG_MODE) {
 							// DEBUG: result
-							debug(`🦠  result: ${JSON.stringify(result, null, 2)}`);
+							debug(`🦠  Please.request.result: ${JSON.stringify(result, null, 2)}`);
 						}
 
 						return resolve(result);
@@ -377,7 +375,6 @@ class Please {
 						}
 
 						console.error(`🛑  please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
-
 						return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
 					};
 
