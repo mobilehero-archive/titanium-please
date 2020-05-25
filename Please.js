@@ -242,13 +242,17 @@ class Please {
 				if (this.config.params) {
 					_.forEach(_.keys(this.config.params), key => {
 						if (typeof this.config.params[key] !== 'undefined') {
-							url.searchParams.set(key, JSON.stringify(this.config.params[key]));
+							if (typeof this.config.params[key] === 'object') {
+								url.searchParams.set(key, JSON.stringify(this.config.params[key]));
+							} else {
+								url.searchParams.set(key, this.config.params[key]);
+							}
 						}
 					});
 					urlPath = url.toString();
 
 					// DEBUG: urlPath
-					debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+					debug(`🦠  Please.urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
@@ -285,7 +289,6 @@ class Please {
 
 
 								if (resp.statusCode === 401) {
-									this.reset();
 									return reject(new UnauthorizedError());
 								}
 
