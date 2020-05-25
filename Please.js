@@ -231,12 +231,14 @@ class Please {
 				const url = new URL(urlPath);
 				if (this.config.params) {
 					_.forEach(_.keys(this.config.params), key => {
-						url.searchParams.set(key, this.config.params[key]);
+						if (typeof this.config.params[key] !== 'undefined') {
+							url.searchParams.set(key, JSON.stringify(this.config.params[key]));
+						}
 					});
 					urlPath = url.toString();
 
 					// DEBUG: urlPath
-					// debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+					debug(`🦠  urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
