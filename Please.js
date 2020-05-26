@@ -10,7 +10,7 @@ const UnauthorizedError = require('@titanium/errors/Unauthorized');
 console.debug(`🦠  [Please] process.env.DEBUG_MODE: ${process.env.DEBUG_MODE}`);
 
 let debug = () => {};
-if (process.env.DEBUG_MODE === 'true') {
+if (process.env.DEBUG_MODE === 'true' || process.env.DEBUG_MODE === true) {
 	debug = (...args) => {
 		console.debug(...args);
 	};
