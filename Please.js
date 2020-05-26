@@ -388,7 +388,9 @@ class Please {
 						}
 
 						console.error(`🛑  please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
-						return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
+						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
+						const error_message = _.get(response, 'error_description') || _.get(response, 'error') || 'Error Occurred';
+						return reject(new Error(error_message));
 					};
 
 					xhr.send(this.config.body);
