@@ -361,6 +361,9 @@ class Please {
 							} catch (err) {
 								console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 								console.warn(`err: ${JSON.stringify(err, null, 2)}`);
+								if (that.config.DEBUG_MODE) {
+									debug(`🦠  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
+								}
 							}
 						}
 
@@ -379,6 +382,9 @@ class Please {
 						} catch (error) {
 							console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
+							if (that.config.DEBUG_MODE) {
+								debug(`🦠  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
+							}
 						}
 
 						// An SSL error has occurred and a secure connection to the server cannot be made.
