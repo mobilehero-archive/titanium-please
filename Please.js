@@ -88,6 +88,11 @@ class Please {
 		return this;
 	}
 
+	auth(args) {
+		this.config.auth = args;
+		return this;
+	}
+
 	timeout(args) {
 		debug('📌  you are here → please.timeout()');
 		this.config.timeout = args;
@@ -264,6 +269,10 @@ class Please {
 					debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
 				}
 
+				if (this.config.credentials) {
+					this.config.auth = `${this.config.credentials.username}:${this.config.credentials.password}`;
+				}
+
 				if (typeof Titanium === 'undefined') {
 					const req = https.request(
 						urlPath,
@@ -271,6 +280,7 @@ class Please {
 							// headers: this.config.headers,
 							method:  this.config.method,
 							headers: this.config.headers,
+							auth:    this.config.auth,
 						},
 						resp => {
 							let data = '';
@@ -344,6 +354,12 @@ class Please {
 					Object.keys(this.config.headers).forEach(header => {
 						xhr.setRequestHeader(header, this.config.headers[header]);
 					});
+
+					if (this.config.credentials) {
+						xhr.username = this.config.credentials.username;
+						xhr.password = this.config.credentials.password;
+						xhr.domain = this.config.credentials.domain;
+					}
 
 					xhr.onload = function (response) {
 						debug('📌  you are here → please.xhr.onload()');
