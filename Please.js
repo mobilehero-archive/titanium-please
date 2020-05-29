@@ -58,8 +58,14 @@ class Please {
 		this.config.auth = auth;
 		this.config.authType = authType;
 		this.config.data = data;
-		this.config.responseType = responseType || 'json';
+		this.config.responseType = (responseType || 'json').toLowerCase();
 		this.config.DEBUG_MODE = debug_mode;
+
+		if (responseType === 'json') {
+			this.header('Content-Type', 'application/json');
+		} else if (responseType === 'xml') {
+			this.header('Content-Type', 'application/xml');
+		}
 		this.__config = _.cloneDeep(this.config);
 	}
 
