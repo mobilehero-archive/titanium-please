@@ -212,6 +212,10 @@ class Please {
 		return this.request();
 	}
 
+	toJSON() {
+		return _.omit(this, [ 'config.auth', 'config.credentials' ]);
+	}
+
 	clone() {
 		debug('📌  you are here → please.clone()');
 		return new Please(_.cloneDeep(this.config));
@@ -272,7 +276,7 @@ class Please {
 
 				if (this.config.DEBUG_MODE) {
 					// DEBUG: please
-					debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
+					// debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
 				}
 
 				if (this.config.credentials) {
@@ -402,7 +406,7 @@ class Please {
 						try {
 							response.json = JSON.parse(this.responseText);
 						} catch (error) {
-							console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
+							debug('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 							if (that.config.DEBUG_MODE) {
 								debug(`🦠  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
@@ -415,7 +419,7 @@ class Please {
 							return reject(new UnauthorizedError());
 						}
 
-						console.error(`🛑  please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
+						debug(`🛑  please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
 						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || 'Error Occurred';
 						return reject(new Error(error_message, _.get(response, 'source.url')));
