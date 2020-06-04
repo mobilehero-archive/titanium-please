@@ -409,7 +409,7 @@ class Please {
 							debug('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 							if (that.config.DEBUG_MODE) {
-								debug(`🦠  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
+								debug(`🦠  xhr.responseText: ${this.responseText}`);
 							}
 						}
 
