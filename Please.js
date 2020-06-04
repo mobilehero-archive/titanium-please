@@ -38,6 +38,7 @@ class Please {
 		bearer,
 		auth,
 		data,
+		file,
 		responseType,
 		debug_mode = false,
 		authType, // swagger?
@@ -58,6 +59,7 @@ class Please {
 		this.config.auth = auth;
 		this.config.authType = authType;
 		this.config.data = data;
+		this.config.file = file;
 		this.config.responseType = (responseType || 'json').toLowerCase();
 		this.config.DEBUG_MODE = debug_mode;
 
@@ -163,6 +165,12 @@ class Please {
 	header(name, value) {
 		debug('📌  you are here → please.header()');
 		this.config.headers[name] = value;
+		return this;
+	}
+
+	file(value) {
+		debug('📌  you are here → please.file()');
+		this.config.file = value;
 		return this;
 	}
 
@@ -359,6 +367,9 @@ class Please {
 					const xhr = Ti.Network.createHTTPClient();
 					xhr.open(this.config.method, urlPath);
 
+					if (! _.isNil(this.config.file)) {
+						xhr.file = this.config.file;
+					}
 					xhr.timeout = this.config.timeout;
 
 					Object.keys(this.config.headers).forEach(header => {
