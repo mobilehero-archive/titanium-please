@@ -419,7 +419,8 @@ class Please {
 							return reject(new UnauthorizedError());
 						}
 
-						debug(`🛑  please.xhr.onerror.response: ${JSON.stringify(response, null, 2)}`);
+						debug(`🛑  please.xhr.onerror.response:`);
+						debug(response);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
 						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || 'Error Occurred';
 						return reject(new Error(error_message, _.get(response, 'source.url')));
