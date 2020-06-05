@@ -68,6 +68,11 @@ class Please {
 		} else if (responseType === 'xml') {
 			this.header('Content-Type', 'application/xml');
 		}
+
+		if (this.file) {
+			this.responseType = 'file';
+		}
+
 		this.__config = _.cloneDeep(this.config);
 	}
 
