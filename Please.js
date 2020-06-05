@@ -287,7 +287,7 @@ class Please {
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
 
-				bearer && this.header('Authorization', `Bearer ${bearer}`);
+				if(!_.isNil(bearer)) && this.header('Authorization', `Bearer ${bearer}`);
 
 				if (this.config.DEBUG_MODE) {
 					// debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
