@@ -171,6 +171,7 @@ class Please {
 	file(value) {
 		debug('📌  you are here → please.file()');
 		this.config.file = value;
+		this.responseType = 'file';
 		return this;
 	}
 
