@@ -59,18 +59,19 @@ class Please {
 		this.config.auth = auth;
 		this.config.authType = authType;
 		this.config.data = data;
-		this.config.file = file;
 		this.config.responseType = (responseType || 'json').toLowerCase();
 		this.config.DEBUG_MODE = debug_mode;
+
+		if (!_.isNil(file)) {
+			this.config.file = file;
+			this.config.responseType = 'file';
+		}
+
 
 		if (responseType === 'json') {
 			this.header('Content-Type', 'application/json');
 		} else if (responseType === 'xml') {
 			this.header('Content-Type', 'application/xml');
-		}
-
-		if (this.file) {
-			this.responseType = 'file';
 		}
 
 		this.__config = _.cloneDeep(this.config);
@@ -176,7 +177,7 @@ class Please {
 	file(value) {
 		debug('📌  you are here → please.file()');
 		this.config.file = value;
-		this.responseType = 'file';
+		this.config.responseType = 'file';
 		return this;
 	}
 
@@ -262,7 +263,7 @@ class Please {
 					console.error(`🛑  unknown url: ${this.config.url}`);
 
 					// DEBUG: baseUrl
-					// debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+					debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
 
 					return reject(new Error(`unknown url: ${this.config.url}`));
 				}
@@ -280,7 +281,6 @@ class Please {
 					});
 					urlPath = url.toString();
 
-					// DEBUG: urlPath
 					debug(`🦠  Please.urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				}
 
@@ -289,7 +289,6 @@ class Please {
 				bearer && this.header('Authorization', `Bearer ${bearer}`);
 
 				if (this.config.DEBUG_MODE) {
-					// DEBUG: please
 					// debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
 				}
 
@@ -319,7 +318,7 @@ class Please {
 								debug('📌  you are here → Please.onEnd');
 
 								// DEBUG: Please.onEnd.response
-								// debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
+								debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
 
 								if (resp.statusCode === 401) {
