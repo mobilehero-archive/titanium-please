@@ -43,7 +43,7 @@ class Please {
 		responseType,
 		debug_mode = false,
 		authType, // swagger?
-	}) {
+	} = {}) {
 		debug('📌  you are here → please.constructor()');
 		this.config = {};
 		this.config.headers = Object.assign({}, headers);
