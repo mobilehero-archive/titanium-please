@@ -175,6 +175,15 @@ class Please {
 		return this;
 	}
 
+	bearer(token) {
+		debug('📌  you are here → please.header()');
+		if (_.isNil(token)) {
+			delete this.config.headers['authorization'];
+		}
+
+		return this;
+	}
+
 	file(value) {
 		debug('📌  you are here → please.file()');
 		this.config.file = value;
@@ -287,7 +296,9 @@ class Please {
 
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
 
-				if(!_.isNil(bearer)) && this.header('Authorization', `Bearer ${bearer}`);
+				if (!_.isNil(bearer)) {
+					this.header('Authorization', `Bearer ${bearer}`);
+				}
 
 				if (this.config.DEBUG_MODE) {
 					// debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
