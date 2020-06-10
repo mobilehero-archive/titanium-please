@@ -154,8 +154,8 @@ class Please {
 
 	responseType(value = 'json') {
 		debug('📌  you are here → please.responseType()');
-		this.responseType = value.toLowerCase();
-		switch (this.responseType) {
+		this.config.responseType = value.toLowerCase();
+		switch (this.config.responseType) {
 			case 'json':
 				this.header('Content-Type', 'application/json');
 				break;
