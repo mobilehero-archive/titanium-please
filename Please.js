@@ -401,13 +401,22 @@ class Please {
 
 					xhr.onload = function (response) {
 						debug('📌  you are here → please.xhr.onload()');
+						let result;
+						if (that.file) {
+							result = {
+								statusCode:    this.status,
+								statusMessage: this.statusText,
+								headers:       this.responseHeaders,
+							};
+						} else {
+							result = {
+								statusCode:    this.status,
+								statusMessage: this.statusText,
+								body:          this.responseText,
+								headers:       this.responseHeaders,
+							};
+						}
 
-						const result = {
-							statusCode:    this.status,
-							statusMessage: this.statusText,
-							body:          this.responseText,
-							headers:       this.responseHeaders,
-						};
 
 						if (config.responseType === 'json') {
 							try {
@@ -432,11 +441,13 @@ class Please {
 					xhr.onerror = function (response) {
 						debug('📌  you are here → please.xhr.onerror()');
 						try {
-							response.json = JSON.parse(this.responseText);
+							if (!that.file) {
+								response.json = JSON.parse(this.responseText);
+							}
 						} catch (error) {
 							debug('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
-							if (that.config.DEBUG_MODE) {
+							if (!that.file && that.config.DEBUG_MODE) {
 								debug(`🦠  xhr.responseText: ${this.responseText}`);
 							}
 						}
