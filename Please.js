@@ -7,11 +7,11 @@ const NetworkOfflineError = require('@titanium/errors/NetworkOffline');
 const UnauthorizedError = require('@titanium/errors/Unauthorized');
 
 // DEBUG: process.env.DEBUG_MODE
-console.debug(`🦠  [Please] process.env.DEBUG_MODE: ${process.env.DEBUG_MODE}`);
+console.debug(`🐙  [Please] process.env.DEBUG_MODE: ${process.env.DEBUG_MODE}`);
 
 let debug = () => {};
-if ((process.env.DEBUG_MODE === 'true') || (process.env.DEBUG_MODE === true)) {
-	console.debug('📌  you are here → DEBUG_MODE === true');
+if ((process.env.API_DEBUG_MODE === 'true') || (process.env.API_DEBUG_MODE === true)) {
+	console.debug('🐙  you are here → API_DEBUG_MODE === true');
 	debug = (...args) => {
 		console.debug(...args);
 	};
@@ -22,6 +22,35 @@ let https;
 if (typeof Titanium === 'undefined') {
 	http = require('http');
 	https = require('https');
+	http.globalAgent.keepAlive = true;
+	http.globalAgent.options.keepAlive = true;
+	https.globalAgent.keepAlive = true;
+	https.globalAgent.options.keepAlive = true;
+
+	// try {
+	// 	const Agent = require('agentkeepalive');
+	// 	const keepaliveAgent = new Agent({
+	// 		maxSockets:        100,
+	// 		maxFreeSockets:    10,
+	// 		timeout:           120000, // active socket keepalive for 60 seconds
+	// 		freeSocketTimeout: 60000, // free socket keepalive for 30 seconds
+	// 	});
+
+	// 	http.globalAgent = keepaliveAgent;
+
+	// 	const { HttpsAgent } = require('agentkeepalive');
+	// 	const httpsKeepaliveAgent = new HttpsAgent({
+	// 		maxSockets:        100,
+	// 		maxFreeSockets:    10,
+	// 		timeout:           600000, // active socket keepalive for 60 seconds
+	// 		freeSocketTimeout: 300000, // free socket keepalive for 30 seconds
+	// 	});
+	// 	https.globalAgent = httpsKeepaliveAgent;
+
+	// } catch (error) {
+	// 	console.error(error);
+	// }
+
 }
 
 class Please {
@@ -44,7 +73,7 @@ class Please {
 		debug_mode = false,
 		authType, // swagger?
 	} = {}) {
-		debug('📌  you are here → please.constructor()');
+		debug('🐙  you are here → please.constructor()');
 		this.config = {};
 		this.config.headers = Object.assign({}, headers);
 		this.config.body = body;
@@ -76,18 +105,59 @@ class Please {
 		}
 
 		this.__config = _.cloneDeep(this.config);
+
+		this.createUrlPath = () => {
+			let urlPath;
+			_.defaults(this.config, {
+				baseUrl: '',
+				url:     '',
+				timeout: 2000,
+				method:  'GET',
+			});
+			if (this.config.url.toLowerCase().startsWith('http')) {
+				// eslint-disable-next-line prefer-destructuring
+				urlPath = this.config.url;
+			} else if (this.config.baseUrl.toLowerCase().startsWith('http')) {
+				urlPath = this.config.baseUrl + this.config.url;
+			} else {
+				console.error(`🛑  unknown url: ${this.config.url}`);
+
+				// DEBUG: baseUrl
+				debug(`🐙  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+
+				return;
+			}
+
+			const url = new URL(urlPath);
+			if (this.config.params) {
+				_.forEach(_.keys(this.config.params), key => {
+					if (typeof this.config.params[key] !== 'undefined') {
+						if (typeof this.config.params[key] === 'object') {
+							url.searchParams.set(key, JSON.stringify(this.config.params[key]));
+						} else {
+							url.searchParams.set(key, this.config.params[key]);
+						}
+					}
+				});
+				urlPath = url.toString();
+
+				// debug(`🐙  Please.urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+			}
+
+			return urlPath;
+		};
 	}
 
 	// TODO: add config function
 
 	headers(args = {}) {
-		debug('📌  you are here → please.headers()');
+		debug('🐙  you are here → please.headers()');
 		Object.assign(this.config.headers, args);
 		return this;
 	}
 
 	params(args = {}) {
-		debug('📌  you are here → please.params()');
+		debug('🐙  you are here → please.params()');
 		Object.keys(args).forEach(key => (args[key] == null) && delete args[key]);
 		Object.assign(this.config.params, args);
 		return this;
@@ -95,6 +165,11 @@ class Please {
 
 	body(args) {
 		this.config.body = args;
+		return this;
+	}
+
+	url(args) {
+		this.config.url = args;
 		return this;
 	}
 
@@ -109,25 +184,19 @@ class Please {
 	}
 
 	timeout(args) {
-		debug('📌  you are here → please.timeout()');
+		debug('🐙  you are here → please.timeout()');
 		this.config.timeout = args;
 		return this;
 	}
 
 	baseUrl(args) {
-		debug('📌  you are here → please.baseUrl()');
+		debug('🐙  you are here → please.baseUrl()');
 		this.config.baseUrl = args;
 		return this;
 	}
 
-	url(args) {
-		debug('📌  you are here → please.url()');
-		this.config.url = args;
-		return this;
-	}
-
 	form(args) {
-		debug('📌  you are here → please.form()');
+		debug('🐙  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
 		this.contentType('application/x-www-form-urlencoded');
@@ -135,7 +204,7 @@ class Please {
 	}
 
 	json(args) {
-		debug('📌  you are here → please.json()');
+		debug('🐙  you are here → please.json()');
 		if (typeof args === 'object') {
 			this.config.body = JSON.stringify(args);
 		} else {
@@ -147,13 +216,13 @@ class Please {
 	}
 
 	contentType(value) {
-		debug('📌  you are here → please.contentType()');
+		debug('🐙  you are here → please.contentType()');
 		this.header('Content-Type', value);
 		return this;
 	}
 
 	responseType(value = 'json') {
-		debug('📌  you are here → please.responseType()');
+		debug('🐙  you are here → please.responseType()');
 		this.config.responseType = value.toLowerCase();
 		switch (this.config.responseType) {
 			case 'json':
@@ -170,13 +239,13 @@ class Please {
 	}
 
 	header(name, value) {
-		debug('📌  you are here → please.header()');
+		debug('🐙  you are here → please.header()');
 		this.config.headers[name] = value;
 		return this;
 	}
 
 	bearer(token) {
-		debug('📌  you are here → please.header()');
+		debug('🐙  you are here → please.header()');
 		if (_.isNil(token)) {
 			delete this.config.headers['authorization'];
 		}
@@ -185,7 +254,7 @@ class Please {
 	}
 
 	file(value) {
-		debug('📌  you are here → please.file()');
+		debug('🐙  you are here → please.file()');
 		this.config.file = value;
 		this.config.responseType = 'file';
 		return this;
@@ -193,12 +262,12 @@ class Please {
 
 	debug(value) {
 		this.config.DEBUG_MODE = !!value;
-		debug(`📌  you are here → please.debug(${this.config.DEBUG_MODE})`);
+		debug(`🐙  you are here → please.debug(${this.config.DEBUG_MODE})`);
 		return this;
 	}
 
 	post(args) {
-		debug('📌  you are here → please.post()');
+		debug('🐙  you are here → please.post()');
 		if (args) {
 			this.config.url = args;
 		}
@@ -208,7 +277,7 @@ class Please {
 	}
 
 	put(args) {
-		debug('📌  you are here → please.put()');
+		debug('🐙  you are here → please.put()');
 		if (args) {
 			this.config.url = args;
 		}
@@ -217,18 +286,18 @@ class Please {
 		return this.request();
 	}
 
-	get(args) {
-		debug('📌  you are here → please.get()');
+	get(url) {
+		debug('🐙  you are here → please.get()');
 		this.config.method = 'GET';
-		if (args) {
-			this.config.url = args;
+		if (url) {
+			this.config.url = url;
 		}
 
-		return this.request();
+		return this.request({ url });
 	}
 
 	delete(args) {
-		debug('📌  you are here → please.delete()');
+		debug('🐙  you are here → please.delete()');
 		this.config.method = 'DELETE';
 		if (args) {
 			this.config.url = args;
@@ -242,58 +311,72 @@ class Please {
 	}
 
 	clone() {
-		debug('📌  you are here → please.clone()');
+		debug('🐙  you are here → please.clone()');
 		return new Please(_.cloneDeep(this.config));
 	}
 
 	reset() {
-		debug('📌  you are here → please.reset()');
+		debug('🐙  you are here → please.reset()');
 		this.config = _.cloneDeep(this.__config);
 	}
 
+
+	getUrl() {
+		debug('🐙  you are here → please.getUrl()');
+		return this.createUrlPath();
+	}
+
 	//  async request(args) {
-	request(args) {
-		debug('📌  you are here → please.request()');
+	request({ url } = {}) {
+		debug(`🐙  you are here → please.request(${url})`);
 		return new Promise((resolve, reject) => {
 			try {
 				const { config } = this;
-				let urlPath;
-				_.defaults(this.config, {
-					baseUrl: '',
-					url:     '',
-					timeout: 2000,
-					method:  'GET',
-				});
-				if (this.config.url.toLowerCase().startsWith('http')) {
-					// eslint-disable-next-line prefer-destructuring
-					urlPath = this.config.url;
-				} else if (this.config.baseUrl.toLowerCase().startsWith('http')) {
-					urlPath = this.config.baseUrl + this.config.url;
-				} else {
-					console.error(`🛑  unknown url: ${this.config.url}`);
 
-					// DEBUG: baseUrl
-					debug(`🦠  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
+				const urlPath = url && url.toLowerCase().startsWith('http') ? url : this.createUrlPath();
 
+				if (!urlPath) {
 					return reject(new Error(`unknown url: ${this.config.url}`));
 				}
 
-				const url = new URL(urlPath);
-				if (this.config.params) {
-					_.forEach(_.keys(this.config.params), key => {
-						if (typeof this.config.params[key] !== 'undefined') {
-							if (typeof this.config.params[key] === 'object') {
-								url.searchParams.set(key, JSON.stringify(this.config.params[key]));
-							} else {
-								url.searchParams.set(key, this.config.params[key]);
-							}
-						}
-					});
-					urlPath = url.toString();
+				// let urlPath;
+				// _.defaults(this.config, {
+				// 	baseUrl: '',
+				// 	url:     '',
+				// 	timeout: 2000,
+				// 	method:  'GET',
+				// });
+				// if (this.config.url.toLowerCase().startsWith('http')) {
+				// 	// eslint-disable-next-line prefer-destructuring
+				// 	urlPath = this.config.url;
+				// } else if (this.config.baseUrl.toLowerCase().startsWith('http')) {
+				// 	urlPath = this.config.baseUrl + this.config.url;
+				// } else {
+				// 	console.error(`🛑  unknown url: ${this.config.url}`);
 
-					debug(`🦠  Please.urlPath: ${JSON.stringify(urlPath, null, 2)}`);
-				}
+				// 	// DEBUG: baseUrl
+				// 	debug(`🐙  baseUrl: ${JSON.stringify(this.config.baseUrl, null, 2)}`);
 
+				// 	return reject(new Error(`unknown url: ${this.config.url}`));
+				// }
+
+				// const url = new URL(urlPath);
+				// if (this.config.params) {
+				// 	_.forEach(_.keys(this.config.params), key => {
+				// 		if (typeof this.config.params[key] !== 'undefined') {
+				// 			if (typeof this.config.params[key] === 'object') {
+				// 				url.searchParams.set(key, JSON.stringify(this.config.params[key]));
+				// 			} else {
+				// 				url.searchParams.set(key, this.config.params[key]);
+				// 			}
+				// 		}
+				// 	});
+				// 	urlPath = url.toString();
+
+				// 	debug(`🐙  Please.urlPath: ${JSON.stringify(urlPath, null, 2)}`);
+				// }
+
+				debug(`🐙  Please.urlPath: ${JSON.stringify(urlPath, null, 2)}`);
 				const bearer = _.isFunction(this.config.bearer) ? this.config.bearer() : this.config.bearer;
 
 				if (!_.isNil(bearer)) {
@@ -301,7 +384,7 @@ class Please {
 				}
 
 				if (this.config.DEBUG_MODE) {
-					// debug(`🦠  please: ${JSON.stringify(this, null, 2)}`);
+					// debug(`🐙  please: ${JSON.stringify(this, null, 2)}`);
 				}
 
 				if (this.config.credentials) {
@@ -327,10 +410,9 @@ class Please {
 
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
-								debug('📌  you are here → Please.onEnd');
+								debug('🐙  you are here → Please.onEnd');
 
-								// DEBUG: Please.onEnd.response
-								debug(`🦠  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
+								debug(`🐙  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
 
 								if (resp.statusCode === 401) {
@@ -344,18 +426,25 @@ class Please {
 									headers:       resp.headers,
 								};
 
+								debug(`🐙  Please.onEnd.result: ${JSON.stringify(result, null, 2)}`);
+
+								debug(`🐙  result.headers: ${JSON.stringify(result.headers, null, 2)}`);
+
+
 								if (config.responseType === 'json') {
 									try {
 										result.json = JSON.parse(data);
 									} catch (error) {
 										console.error('🛑  Please.onEnd.parse: Error parsing JSON response.');
 										console.warn(`error: ${JSON.stringify(error, null, 2)}`);
+										console.error(error);
+										console.debug(`🐙  please.data: ${data}`);
 									}
 								}
 
 								if (this.config.DEBUG_MODE) {
 								// DEBUG: result
-									debug(`🦠  Please.request.result: ${JSON.stringify(result, null, 2)}`);
+									debug(`🐙  Please.request.result: ${JSON.stringify(result, null, 2)}`);
 								}
 
 								return resolve(result);
@@ -379,6 +468,8 @@ class Please {
 						req.write(querystring.stringify(this.config.form));
 					}
 					req.end();
+					debug('🐙  you are here → Please.end');
+
 				} else {
 					const that = this;
 					const xhr = Ti.Network.createHTTPClient();
@@ -400,7 +491,7 @@ class Please {
 					}
 
 					xhr.onload = function (response) {
-						debug('📌  you are here → please.xhr.onload()');
+						debug('🐙  you are here → please.xhr.onload()');
 						let result;
 						if (that.file) {
 							result = {
@@ -425,21 +516,21 @@ class Please {
 								console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 								console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 								if (that.config.DEBUG_MODE) {
-									debug(`🦠  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
+									debug(`🐙  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
 								}
 							}
 						}
 
 						if (that.config.DEBUG_MODE) {
 							// DEBUG: result
-							debug(`🦠  Please.request.result: ${JSON.stringify(result, null, 2)}`);
+							debug(`🐙  Please.request.result: ${JSON.stringify(result, null, 2)}`);
 						}
 
 						return resolve(result);
 					};
 
 					xhr.onerror = function (response) {
-						debug('📌  you are here → please.xhr.onerror()');
+						debug('🐙  you are here → please.xhr.onerror()');
 						try {
 							if (!that.file) {
 								response.json = JSON.parse(this.responseText);
@@ -448,7 +539,7 @@ class Please {
 							debug('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 							if (!that.file && that.config.DEBUG_MODE) {
-								debug(`🦠  xhr.responseText: ${this.responseText}`);
+								debug(`🐙  xhr.responseText: ${this.responseText}`);
 							}
 						}
 
@@ -470,7 +561,7 @@ class Please {
 
 				return null;
 			} catch (error) {
-				debug('📌  you are here → please.request.catch()');
+				debug('🐙  you are here → please.request.catch()');
 				console.error(`error: ${JSON.stringify(error, null, 2)}`);
 
 				if (error.message && error.message === 'The Internet connection appears to be offline.') {
@@ -485,5 +576,9 @@ class Please {
 			});
 	}
 }
+
+Please.get = async url => {
+	return await new Please({ baseUrl: url }).get();
+};
 
 module.exports = Please;
