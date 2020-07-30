@@ -513,17 +513,17 @@ class Please {
 							try {
 								result.json = JSON.parse(this.responseText);
 							} catch (err) {
-								console.error('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
+								console.error('🛑  please.xhr.onload.parse: Error parsing JSON response.');
 								console.warn(`err: ${JSON.stringify(err, null, 2)}`);
 								if (that.config.DEBUG_MODE) {
-									debug(`🐙  xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
+									debug(`🐙  please.xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
 								}
 							}
 						}
 
 						if (that.config.DEBUG_MODE) {
 							// DEBUG: result
-							debug(`🐙  Please.request.result: ${JSON.stringify(result, null, 2)}`);
+							debug(`🐙  please.request.result: ${JSON.stringify(result, null, 2)}`);
 						}
 
 						return resolve(result);
@@ -536,10 +536,10 @@ class Please {
 								response.json = JSON.parse(this.responseText);
 							}
 						} catch (error) {
-							debug('🛑  Please.xhr.onload.parse: Error parsing JSON response.');
+							debug('🛑  please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 							if (!that.file && that.config.DEBUG_MODE) {
-								debug(`🐙  xhr.responseText: ${this.responseText}`);
+								debug(`🐙  please.xhr.responseText: ${this.responseText}`);
 							}
 						}
 
@@ -551,6 +551,7 @@ class Please {
 
 						debug(`🛑  please.xhr.onerror.response:`);
 						debug(response);
+						debug(`🐙  please.xhr.responseText: ${this.responseText}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
 						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || 'Error Occurred';
 						return reject(new Error(error_message, _.get(response, 'source.url')));
