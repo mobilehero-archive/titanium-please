@@ -43,7 +43,7 @@
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.15",
 		"eslint": "^7.6.0",
-		"lodash": "^4.17.19"
+		"lodash": "^4.17.20"
 	},
 	"peerDependencies": {
 		"@titanium/errors": "^0.0.1"
