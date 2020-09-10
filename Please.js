@@ -74,7 +74,7 @@ class Please {
 		debug_mode = false,
 		authType, // swagger?
 	} = {}) {
-		logger.http('🐙  you are here → please.constructor()');
+		logger.track('🐙  you are here → please.constructor()');
 		this.config = {};
 		this.config.headers = Object.assign({}, headers);
 		this.config.body = body;
@@ -152,13 +152,13 @@ class Please {
 	// TODO: add config function
 
 	headers(args = {}) {
-		logger.http('🐙  you are here → please.headers()');
+		logger.track('🐙  you are here → please.headers()');
 		Object.assign(this.config.headers, args);
 		return this;
 	}
 
 	params(args = {}) {
-		logger.http('🐙  you are here → please.params()');
+		logger.track('🐙  you are here → please.params()');
 		Object.keys(args).forEach(key => (args[key] == null) && delete args[key]);
 		Object.assign(this.config.params, args);
 		return this;
@@ -185,19 +185,19 @@ class Please {
 	}
 
 	timeout(args) {
-		logger.http('🐙  you are here → please.timeout()');
+		logger.track('🐙  you are here → please.timeout()');
 		this.config.timeout = args;
 		return this;
 	}
 
 	baseUrl(args) {
-		logger.http('🐙  you are here → please.baseUrl()');
+		logger.track('🐙  you are here → please.baseUrl()');
 		this.config.baseUrl = args;
 		return this;
 	}
 
 	form(args) {
-		logger.http('🐙  you are here → please.form()');
+		logger.track('🐙  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
 		this.contentType('application/x-www-form-urlencoded');
@@ -205,7 +205,7 @@ class Please {
 	}
 
 	json(args) {
-		logger.http('🐙  you are here → please.json()');
+		logger.track('🐙  you are here → please.json()');
 		if (typeof args === 'object') {
 			this.config.body = JSON.stringify(args);
 		} else {
@@ -217,13 +217,13 @@ class Please {
 	}
 
 	contentType(value) {
-		logger.http('🐙  you are here → please.contentType()');
+		logger.track('🐙  you are here → please.contentType()');
 		this.header('Content-Type', value);
 		return this;
 	}
 
 	responseType(value = 'json') {
-		logger.http('🐙  you are here → please.responseType()');
+		logger.track('🐙  you are here → please.responseType()');
 		this.config.responseType = value.toLowerCase();
 		switch (this.config.responseType) {
 			case 'json':
@@ -240,13 +240,13 @@ class Please {
 	}
 
 	header(name, value) {
-		logger.http('🐙  you are here → please.header()');
+		logger.track('🐙  you are here → please.header()');
 		this.config.headers[name] = value;
 		return this;
 	}
 
 	bearer(token) {
-		logger.http('🐙  you are here → please.header()');
+		logger.track('🐙  you are here → please.header()');
 		if (_.isNil(token)) {
 			delete this.config.headers['authorization'];
 		}
@@ -255,7 +255,7 @@ class Please {
 	}
 
 	file(value) {
-		logger.http('🐙  you are here → please.file()');
+		logger.track('🐙  you are here → please.file()');
 		this.config.file = value;
 		this.config.responseType = 'file';
 		return this;
@@ -263,12 +263,12 @@ class Please {
 
 	debug(value) {
 		this.config.DEBUG_MODE = !!value;
-		logger.http(`🐙  you are here → please.debug(${this.config.DEBUG_MODE})`);
+		logger.track(`🐙  you are here → please.debug(${this.config.DEBUG_MODE})`);
 		return this;
 	}
 
 	post(args) {
-		logger.http('🐙  you are here → please.post()');
+		logger.track('🐙  you are here → please.post()');
 		if (args) {
 			this.config.url = args;
 		}
@@ -278,7 +278,7 @@ class Please {
 	}
 
 	put(args) {
-		logger.http('🐙  you are here → please.put()');
+		logger.track('🐙  you are here → please.put()');
 		if (args) {
 			this.config.url = args;
 		}
@@ -288,7 +288,7 @@ class Please {
 	}
 
 	get(url) {
-		logger.http('🐙  you are here → please.get()');
+		logger.track('🐙  you are here → please.get()');
 		this.config.method = 'GET';
 		if (url) {
 			this.config.url = url;
@@ -298,7 +298,7 @@ class Please {
 	}
 
 	delete(args) {
-		logger.http('🐙  you are here → please.delete()');
+		logger.track('🐙  you are here → please.delete()');
 		this.config.method = 'DELETE';
 		if (args) {
 			this.config.url = args;
@@ -312,24 +312,24 @@ class Please {
 	}
 
 	clone() {
-		logger.http('🐙  you are here → please.clone()');
+		logger.track('🐙  you are here → please.clone()');
 		return new Please(_.cloneDeep(this.config));
 	}
 
 	reset() {
-		logger.http('🐙  you are here → please.reset()');
+		logger.track('🐙  you are here → please.reset()');
 		this.config = _.cloneDeep(this.__config);
 	}
 
 
 	getUrl() {
-		logger.http('🐙  you are here → please.getUrl()');
+		logger.track('🐙  you are here → please.getUrl()');
 		return this.createUrlPath();
 	}
 
 	//  async request(args) {
 	request({ url } = {}) {
-		logger.http(`🐙  you are here → please.request(${url})`);
+		logger.track(`🐙  you are here → please.request(${url})`);
 		return new Promise((resolve, reject) => {
 			try {
 				const { config } = this;
@@ -411,7 +411,7 @@ class Please {
 
 							// The whole response has been received. Print out the result.
 							resp.on('end', () => {
-								logger.http('🐙  you are here → Please.onEnd');
+								logger.track('🐙  you are here → Please.onEnd');
 
 								logger.http(`🐙  Please.onEnd.response: ${JSON.stringify(data, null, 2)}`);
 
@@ -469,7 +469,7 @@ class Please {
 						req.write(querystring.stringify(this.config.form));
 					}
 					req.end();
-					logger.http('🐙  you are here → Please.end');
+					logger.track('🐙  you are here → Please.end');
 
 				} else {
 					const that = this;
@@ -492,7 +492,7 @@ class Please {
 					}
 
 					xhr.onload = function (response) {
-						logger.http('🐙  you are here → please.xhr.onload()');
+						logger.track('🐙  you are here → please.xhr.onload()');
 						let result;
 						if (that.file) {
 							result = {
@@ -509,7 +509,6 @@ class Please {
 							};
 						}
 
-
 						if (config.responseType === 'json') {
 							try {
 								result.json = JSON.parse(this.responseText);
@@ -524,14 +523,14 @@ class Please {
 
 						if (that.config.DEBUG_MODE) {
 							// DEBUG: result
-							logger.http(`🐙  please.request.result: ${JSON.stringify(result, null, 2)}`);
+							logger.http(`🐙  please.xhr.request.result: ${JSON.stringify(result, null, 2)}`);
 						}
 
 						return resolve(result);
 					};
 
 					xhr.onerror = function (response) {
-						logger.http('🐙  you are here → please.xhr.onerror()');
+						logger.track('🐙  you are here → please.xhr.onerror()');
 						try {
 							if (!that.file) {
 								response.json = JSON.parse(this.responseText);
@@ -539,7 +538,7 @@ class Please {
 						} catch (error) {
 							logger.http('🛑  please.xhr.onload.parse: Error parsing JSON response.');
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
-							if (!that.file && that.config.DEBUG_MODE) {
+							if (that.config.DEBUG_MODE) {
 								logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
 							}
 						}
@@ -553,6 +552,7 @@ class Please {
 						logger.http(`🛑  please.xhr.onerror.response:`);
 						logger.http(response);
 						logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
+						logger.http(`🐙  please.xhr.response.json: ${JSON.stringify(response.json, null, 2)}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
 						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || 'Error Occurred';
 						return reject(new Error(error_message, _.get(response, 'source.url')));
@@ -563,7 +563,7 @@ class Please {
 
 				return null;
 			} catch (error) {
-				logger.http('🐙  you are here → please.request.catch()');
+				logger.track('🐙  you are here → please.request.catch()');
 				console.error(`error: ${JSON.stringify(error, null, 2)}`);
 
 				if (error.message && error.message === 'The Internet connection appears to be offline.') {
