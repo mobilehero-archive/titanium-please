@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/please",
-	"version": "0.0.43",
+	"version": "0.0.44",
 	"description": "Titanium native mobile module for politely requesting data",
 	"keywords": [
 		"rest",
@@ -46,7 +46,8 @@
 		"lodash": "^4.17.20"
 	},
 	"peerDependencies": {
-		"@titanium/errors": "^0.0.2"
+		"@titanium/errors": "^0.0.2",
+		"@geek/logger": "^0.0.1"
 	},
 	"main": "./Please.js",
 	"scripts": {

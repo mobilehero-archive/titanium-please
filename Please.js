@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
 const querystring = require('querystring');
-const logger = require('@geek/logger');
+const logger = require('@geek/logger').createLogger('@titanium/please', { meta: { filename: __filename } });
 
 const NetworkOfflineError = require('@titanium/errors/NetworkOffline');
 const UnauthorizedError = require('@titanium/errors/Unauthorized');
