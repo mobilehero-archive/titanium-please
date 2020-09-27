@@ -234,6 +234,7 @@ class Please {
 				break;
 
 			default:
+				this.header('Content-Type', 'text/html; charset=utf-8');
 				break;
 		}
 		return this;
