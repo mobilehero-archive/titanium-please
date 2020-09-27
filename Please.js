@@ -436,10 +436,10 @@ class Please {
 									try {
 										result.json = JSON.parse(data);
 									} catch (error) {
-										console.error('🛑  Please.onEnd.parse: Error parsing JSON response.');
-										console.warn(`error: ${JSON.stringify(error, null, 2)}`);
-										console.error(error);
-										console.logger.http(`🐙  please.data: ${data}`);
+										logger.error('🛑  Please.onEnd.parse: Error parsing JSON response.');
+										logger.warn(`error: ${JSON.stringify(error, null, 2)}`);
+										logger.error(error);
+										logger.http(`🐙  please.data: ${data}`);
 									}
 								}
 
