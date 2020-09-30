@@ -495,7 +495,7 @@ class Please {
 					xhr.onload = function (response) {
 						logger.track('🐙  you are here → please.xhr.onload()');
 						let result;
-						if (that.file) {
+						if (that.config.file) {
 							result = {
 								statusCode:    this.status,
 								statusMessage: this.statusText,
@@ -533,8 +533,9 @@ class Please {
 					xhr.onerror = function (response) {
 						logger.track('🐙  you are here → please.xhr.onerror()');
 						try {
-							if (!that.file) {
+							if (!that.config.file && this.responseText) {
 								response.json = JSON.parse(this.responseText);
+								// console.error(response.json);
 							}
 						} catch (error) {
 							logger.http('🛑  please.xhr.onload.parse: Error parsing JSON response.');
@@ -551,7 +552,7 @@ class Please {
 						}
 
 						logger.http(`🛑  please.xhr.onerror.response:`);
-						logger.http(response);
+						console.log(response);
 						logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
 						logger.http(`🐙  please.xhr.response.json: ${JSON.stringify(response.json, null, 2)}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
@@ -566,6 +567,7 @@ class Please {
 			} catch (error) {
 				logger.track('🐙  you are here → please.request.catch()');
 				console.error(`error: ${JSON.stringify(error, null, 2)}`);
+				logger.error(`🦠  please.request.catch.error: ${JSON.stringify(error, null, 2)}`);
 
 				if (error.message && error.message === 'The Internet connection appears to be offline.') {
 					return reject(new NetworkOfflineError());
