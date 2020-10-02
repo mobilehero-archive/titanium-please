@@ -466,7 +466,7 @@ class Please {
 
 					if (this.config.body) {
 						req.write(this.config.body);
-					} else 	if (this.config.form) {
+					} else if (this.config.form) {
 						req.write(querystring.stringify(this.config.form));
 					}
 					req.end();
@@ -560,7 +560,7 @@ class Please {
 						return reject(new Error(error_message, _.get(response, 'source.url')));
 					};
 
-					xhr.send(this.config.body);
+					xhr.send(this.config.body || this.config.form);
 				}
 
 				return null;
