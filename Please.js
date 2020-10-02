@@ -559,11 +559,15 @@ class Please {
 						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || 'Error Occurred';
 						return reject(new Error(error_message, _.get(response, 'source.url')));
 					};
+					if (that.config.DEBUG_MODE) {
+						logger.http(`🦠  this.config.body: ${JSON.stringify(this.config.body, null, 2)}`);
+						logger.http(`🦠  this.config.form: ${JSON.stringify(this.config.form, null, 2)}`);
+					}
 
 					xhr.send(this.config.body || this.config.form);
 				}
 
-				return null;
+				return;
 			} catch (error) {
 				logger.track('🐙  you are here → please.request.catch()');
 				console.error(`error: ${JSON.stringify(error, null, 2)}`);
