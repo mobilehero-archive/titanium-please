@@ -243,7 +243,8 @@ class Please {
 			case 'form':
 				this.header('Content-Type', 'application/x-www-form-urlencoded');
 				break;
-
+			case 'html':
+			case 'text':
 			default:
 				this.header('Content-Type', 'text/html; charset=utf-8');
 				break;
