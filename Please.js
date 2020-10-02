@@ -196,11 +196,19 @@ class Please {
 		return this;
 	}
 
+	xml(args) {
+		logger.track('🐙  you are here → please.xml()');
+		this.config.body = args;
+		this.config.method = 'POST';
+		this.responseType('xml');
+		return this;
+	}
+
 	form(args) {
 		logger.track('🐙  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
-		this.contentType('application/x-www-form-urlencoded');
+		this.responseType('form');
 		return this;
 	}
 
@@ -212,7 +220,7 @@ class Please {
 			this.config.body = args;
 		}
 		this.config.method = 'POST';
-		this.contentType('application/json');
+		this.responseType('json');
 		return this;
 	}
 
@@ -231,6 +239,9 @@ class Please {
 				break;
 			case 'xml':
 				this.header('Content-Type', 'application/xml');
+				break;
+			case 'form':
+				this.header('Content-Type', 'application/x-www-form-urlencoded');
 				break;
 
 			default:
