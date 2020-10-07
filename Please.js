@@ -544,13 +544,16 @@ class Please {
 
 					xhr.onerror = function (response) {
 						logger.track('🐙  you are here → please.xhr.onerror()');
+						let parsingError = false;
 						try {
-							if (!that.config.file && this.responseText) {
+							// if (!that.config.file && this.responseText) {
+							if ((that.config.responseType === 'json') && this.responseText) {
 								response.json = JSON.parse(this.responseText);
 								// console.error(response.json);
 							}
 						} catch (error) {
 							logger.http('🛑  please.xhr.onload.parse: Error parsing JSON response.');
+							parsingError = true;
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 							if (that.config.DEBUG_MODE) {
 								logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
@@ -564,13 +567,14 @@ class Please {
 						}
 
 						logger.http(`🛑  please.xhr.onerror.response:`);
-						console.log(response);
+						// console.log(response);
 						logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
 						logger.http(`🐙  please.xhr.response.json: ${JSON.stringify(response.json, null, 2)}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
-						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || 'Error Occurred';
+						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || parsingError ? `Error parsing response from ${that.config.url}` : 'Error Occurred';
 						return reject(new Error(error_message, _.get(response, 'source.url')));
 					};
+
 					if (that.config.DEBUG_MODE) {
 						logger.http(`🦠  this.config.body: ${JSON.stringify(this.config.body, null, 2)}`);
 						logger.http(`🦠  this.config.form: ${JSON.stringify(this.config.form, null, 2)}`);
