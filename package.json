@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/please",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"description": "Titanium native mobile module for politely requesting data",
 	"keywords": [
 		"rest",
@@ -43,6 +43,9 @@
 	"devDependencies": {
 		"@titanium/eslint-config": "0.0.17",
 		"eslint": "^7.10.0",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-jsdoc": "^30.6.4",
+		"eslint-plugin-promise": "^4.2.1",
 		"lodash": "^4.17.20"
 	},
 	"peerDependencies": {

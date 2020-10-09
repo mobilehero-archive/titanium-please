@@ -1,3 +1,4 @@
+/* eslint-disable no-catch-shadow */
 /* eslint-disable promise/avoid-new */
 /* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
@@ -244,7 +245,7 @@ class Please {
 			default:
 				this.header('Content-Type', value);
 				break;
-		}		
+		}
 		return this;
 	}
 
@@ -550,6 +551,8 @@ class Please {
 									logger.http(`🐙  please.xhr.responseText: ${JSON.stringify(this.responseText, null, 2)}`);
 								}
 							}
+						} else if (config.responseType === 'xml') {
+							result.xml = this.responseXml;
 						}
 
 						if (that.config.DEBUG_MODE) {
@@ -557,6 +560,7 @@ class Please {
 							logger.http(`🐙  please.xhr.request.result: ${JSON.stringify(result, null, 2)}`);
 						}
 
+						logger.debug(`🐙  successful response from: ${that.config.url}`);
 						return resolve(result);
 					};
 
@@ -572,7 +576,7 @@ class Please {
 						} catch (error) {
 							logger.http('🛑  please.xhr.onload.parse: Error parsing JSON response.');
 							parsingError = true;
-							console.error(`error: ${JSON.stringify(error, null, 2)}`);
+							logger.error(error);
 							if (that.config.DEBUG_MODE) {
 								logger.http(`🛑  Error parsing responseText: ${this.responseText}`);
 							}
@@ -589,14 +593,19 @@ class Please {
 						logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
 						logger.http(`🐙  please.xhr.response.json: ${JSON.stringify(response.json, null, 2)}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
-						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || (parsingError ? `Error parsing response from ${that.config.url}` : 'Error Occurred');
-						return reject(new Error(error_message, _.get(response, 'source.url')));
+
+						const error_message = _.get(response, 'json.error') || _.get(response, 'json.error_description') || (parsingError ? `Error parsing response from ${that.config.url}` : 'Error Occurred');
+
+						const error = new Error(error_message);
+						error.url = that.config.url;
+						error.description = _.get(response, 'json.error_description');
+						return reject(error);
 					};
 
 					if (this.config.DEBUG_MODE) {
-						logger.http(`🦠  please.config: ${JSON.stringify(config, null, 2)}`);
-						// logger.http(`🦠  this.config.body: ${JSON.stringify(this.config.body, null, 2)}`);
-						// logger.http(`🦠  this.config.form: ${JSON.stringify(this.config.form, null, 2)}`);
+						logger.http(`🐙  please.config: ${JSON.stringify(config, null, 2)}`);
+						// logger.http(`🐙  this.config.body: ${JSON.stringify(this.config.body, null, 2)}`);
+						// logger.http(`🐙  this.config.form: ${JSON.stringify(this.config.form, null, 2)}`);
 					}
 
 					xhr.send(this.config.body || this.config.form);
