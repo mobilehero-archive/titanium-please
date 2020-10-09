@@ -200,7 +200,7 @@ class Please {
 		logger.track('🐙  you are here → please.xml()');
 		this.config.body = args;
 		this.config.method = 'POST';
-		this.responseType('xml');
+		this.contentType('xml');
 		return this;
 	}
 
@@ -208,7 +208,7 @@ class Please {
 		logger.track('🐙  you are here → please.form()');
 		this.config.form = args;
 		this.config.method = 'POST';
-		this.responseType('form');
+		this.contentType('form');
 		return this;
 	}
 
@@ -220,13 +220,31 @@ class Please {
 			this.config.body = args;
 		}
 		this.config.method = 'POST';
-		this.responseType('json');
+		this.contentType('json');
 		return this;
 	}
 
-	contentType(value) {
-		logger.track('🐙  you are here → please.contentType()');
-		this.header('Content-Type', value);
+	contentType(value = 'text/html; charset=utf-8') {
+		logger.track(`🐙  you are here → please.contentType(${value})`);
+		value = value.toLowerCase();
+		switch (value) {
+			case 'json':
+				this.header('Content-Type', 'application/json');
+				break;
+			case 'xml':
+				this.header('Content-Type', 'application/xml');
+				break;
+			case 'form':
+				this.header('Content-Type', 'application/x-www-form-urlencoded');
+				break;
+			case 'html':
+			case 'text':
+				this.header('Content-Type', 'text/html; charset=utf-8');
+				break;
+			default:
+				this.header('Content-Type', value);
+				break;
+		}		
 		return this;
 	}
 
@@ -556,7 +574,7 @@ class Please {
 							parsingError = true;
 							console.error(`error: ${JSON.stringify(error, null, 2)}`);
 							if (that.config.DEBUG_MODE) {
-								logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
+								logger.http(`🛑  Error parsing responseText: ${this.responseText}`);
 							}
 						}
 
@@ -571,13 +589,14 @@ class Please {
 						logger.http(`🐙  please.xhr.responseText: ${this.responseText}`);
 						logger.http(`🐙  please.xhr.response.json: ${JSON.stringify(response.json, null, 2)}`);
 						// return reject(new Error({ message: 'Error Occurred', statusCode: response.code, source: response.source }));
-						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || parsingError ? `Error parsing response from ${that.config.url}` : 'Error Occurred';
+						const error_message = _.get(response, 'json.error_description') || _.get(response, 'json.error') || (parsingError ? `Error parsing response from ${that.config.url}` : 'Error Occurred');
 						return reject(new Error(error_message, _.get(response, 'source.url')));
 					};
 
-					if (that.config.DEBUG_MODE) {
-						logger.http(`🦠  this.config.body: ${JSON.stringify(this.config.body, null, 2)}`);
-						logger.http(`🦠  this.config.form: ${JSON.stringify(this.config.form, null, 2)}`);
+					if (this.config.DEBUG_MODE) {
+						logger.http(`🦠  please.config: ${JSON.stringify(config, null, 2)}`);
+						// logger.http(`🦠  this.config.body: ${JSON.stringify(this.config.body, null, 2)}`);
+						// logger.http(`🦠  this.config.form: ${JSON.stringify(this.config.form, null, 2)}`);
 					}
 
 					xhr.send(this.config.body || this.config.form);
