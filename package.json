@@ -41,21 +41,23 @@
 		"@titanium/errors": "0.0.2"
 	},
 	"devDependencies": {
-		"@titanium/eslint-config": "0.0.17",
-		"eslint": "^7.10.0",
+		"@titanium/eslint-config": "0.0.18",
+		"eslint": "^7.12.1",
 		"eslint-plugin-import": "^2.22.1",
-		"eslint-plugin-jsdoc": "^30.6.4",
+		"eslint-plugin-jsdoc": "^30.7.3",
 		"eslint-plugin-promise": "^4.2.1",
 		"lodash": "^4.17.20"
 	},
 	"peerDependencies": {
-		"@titanium/errors": "^0.0.2",
-		"@geek/logger": "^1.0.0"
+		"@titanium/errors": "latest",
+		"@geek/logger": "^1.0.17"
 	},
 	"main": "./Please.js",
 	"scripts": {
-		"test": "npm install --ignore-scripts && npm run list",
+		"prep": "npm install --ignore-scripts && npm run list",
 		"list": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
-		"prepublishOnly": "git pull && bump"
+		"prepublishOnly": "git pull && bump release",
+		"test": "npm run prep",
+		"lint": "eslint . --fix"
 	}
 }
