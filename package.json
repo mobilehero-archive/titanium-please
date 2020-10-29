@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/please",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"description": "Titanium native mobile module for politely requesting data",
 	"keywords": [
 		"rest",
