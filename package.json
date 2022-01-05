@@ -1,7 +1,7 @@
 {
 	"name": "@titanium/please",
-	"version": "1.0.11",
-	"description": "Titanium native mobile module for politely requesting data",
+	"version": "1.0.15",
+	"description": "⭐  Axway Amplify module for REST API calls using Appcelerator Titanium Mobile",
 	"keywords": [
 		"rest",
 		"reste",
@@ -18,6 +18,16 @@
 		"native",
 		"axwaydev",
 		"appcelerator",
+		"sdk",
+		"plugin",
+		"amplify",
+		"api-builder",
+		"appcelerator-titanium",
+		"titanium-sdk",
+		"titanium-mobile",
+		"titanium-module",
+		"axway-sdk",
+		"axway-amplify",
 		"brenton-house"
 	],
 	"author": {
@@ -25,6 +35,7 @@
 		"email": "brenton.house@gmail.com",
 		"url": "https://brenton.house"
 	},
+	"homepage": "https://brenton.house/saying-goodbye-to-axway-amplify-titanium-31a44f3671de",
 	"maintainers": [
 		{
 			"name": "Brenton House",
@@ -41,10 +52,11 @@
 		"@titanium/errors": "0.0.2"
 	},
 	"devDependencies": {
-		"@titanium/eslint-config": "0.0.18",
-		"eslint": "^7.12.1",
+		"@titanium/eslint-config": "1.0.1",
+		"eslint": "^7.18.0",
 		"eslint-plugin-import": "^2.22.1",
-		"eslint-plugin-jsdoc": "^30.7.3",
+		"eslint-plugin-jsdoc": "^31.0.8",
+		"eslint-plugin-jsonc": "^0.8.2",
 		"eslint-plugin-promise": "^4.2.1",
 		"lodash": "^4.17.20"
 	},
@@ -54,10 +66,11 @@
 	},
 	"main": "./Please.js",
 	"scripts": {
-		"prep": "npm install --ignore-scripts && npm run list",
+		"lint": "eslint . --fix",
 		"list": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
-		"prepublishOnly": "git pull && bump release",
-		"test": "npm run prep",
-		"lint": "eslint . --fix"
+		"prep": "npm install --ignore-scripts && npm run list",
+		"test": "npm install --ignore-scripts && npm run prep",
+		"prepublishOnly2": "git pull && npm test && bump insane",
+		"prepublishOnly": "git pull && npm test && npm audit fix && bump insane"
 	}
 }
