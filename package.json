@@ -49,7 +49,7 @@
 		"url": "github:brentonhouse/titanium-please"
 	},
 	"dependencies": {
-		"@titanium/errors": "1.0.2"
+		"@titanium/errors": "1.0.5"
 	},
 	"devDependencies": {
 		"@titanium/eslint-config": "1.0.8",
