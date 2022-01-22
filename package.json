@@ -1,6 +1,6 @@
 {
 	"name": "@titanium/please",
-	"version": "1.0.37",
+	"version": "1.0.38",
 	"description": "⭐  Axway Amplify module for REST API calls using Appcelerator Titanium SDK",
 	"keywords": [
 		"rest",
@@ -47,13 +47,13 @@
 		"url": "github:mobilehero-archive/titanium-please"
 	},
 	"dependencies": {
-		"@titanium/errors": "1.0.26"
+		"@titanium/errors": "1.0.28"
 	},
 	"devDependencies": {
-		"@titanium/eslint-config": "1.0.32",
+		"@titanium/eslint-config": "1.0.33",
 		"eslint": "^8.7.0",
 		"eslint-plugin-import": "^2.25.4",
-		"eslint-plugin-jsdoc": "^37.6.1",
+		"eslint-plugin-jsdoc": "^37.6.3",
 		"eslint-plugin-jsonc": "^2.0.0",
 		"eslint-plugin-promise": "^6.0.0",
 		"lodash": "^4.17.21"
